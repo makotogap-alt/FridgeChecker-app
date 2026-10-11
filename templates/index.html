@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冷蔵庫に何ある？</title>
+</head>
+
+<body>
+  <h1>冷蔵庫に何ある？</h1>
+  <p>冷蔵庫の中身を確認できるWebアプリです。</p>
+
+  <h2>食材を登録</h2>
+
+  <form action="/add" method="post">
+    <div>
+      <label for="name">食材名</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+
+    <div>
+      <label for="quantity">数量</label>
+      <input type="number" id="quantity" name="quantity" min="1" required>
+    </div>
+
+    <div>
+      <label for="unit">単位</label>
+      <select id="unit" name="unit">
+        <option value="個">個</option>
+        <option value="本">本</option>
+        <option value="袋">袋</option>
+        <option value="パック">パック</option>
+      </select>
+    </div>
+
+    <button type="submit">登録</button>
+  </form>
+
+  <h2>冷蔵庫の中身</h2>
+
+  {% if foods %}
+    <ul>
+      {% for food in foods %}
+        <li>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>食材はまだ登録されていません。</p>
+  {% endif %}
+
+</body>
+</html>
