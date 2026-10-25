@@ -1,0 +1,10 @@
+body { font-family: sans-serif; max-width: 800px; margin: 24px auto; padding: 0 16px; color: #242424; }
+form > div { margin-bottom: 12px; }
+input, select, button { font: inherit; padding: 8px; max-width: 100%; box-sizing: border-box; }
+ul { list-style: none; padding: 0; }
+.food { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px; margin: 12px 0; border: 1px solid #ccc; border-radius: 8px; }
+.food.expired { background: #fff0f0; border-color: #b42318; }
+.expired .status { color: #a11a12; }
+.food.soon { background: #fff8df; border-color: #926500; }
+.soon .status { color: #765100; }
+.unset .status { color: #555; }

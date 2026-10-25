@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>冷蔵庫に何ある？</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -33,15 +34,26 @@
       </select>
     </div>
 
+    <div>
+      <label for="expiry_date">賞味期限（任意）</label>
+      <input type="date" id="expiry_date" name="expiry_date">
+    </div>
+
     <button type="submit">登録</button>
   </form>
 
   <h2>冷蔵庫の中身</h2>
+  <p>今日：{{ today }}（日本時間）。賞味期限が今日から3日以内の食材を表示でお知らせします。</p>
 
   {% if foods %}
     <ul>
       {% for food in foods %}
-        <li>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</li>
+        {% set status, label = expiry_status(food.expiry_date, today) %}
+        <li class="food {{ status }}">
+          <span>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</span>
+          <span>賞味期限：{{ food.expiry_date if food.expiry_date else '未設定' }}</span>
+          <strong class="status">{{ label }}</strong>
+        </li>
       {% endfor %}
     </ul>
   {% else %}
