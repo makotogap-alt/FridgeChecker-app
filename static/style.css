@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f8f5;
+    margin: 0;
+    color: #243b2f;
+  }
+  
+  .container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #226b48;
+  }
+  
+  .card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input, select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin-top: 5px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    background-color: #287c50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #195c39;
+  }
+  
+  .delete {
+    background-color: #c74444;
+  }
+  
+  .expired {
+    color: #c62828;
+    font-weight: bold;
+    background-color: #ffebee;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .soon {
+    color: #a56a00;
+    font-weight: bold;
+    background-color: #fff3cd;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .okay {
+    color: #237c42;
+    font-weight: bold;
+    background-color: #e8f5e9;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .unset {
+    color: #777;
+  }
+  
+  @media (max-width: 600px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
