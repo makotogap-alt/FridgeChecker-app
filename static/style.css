@@ -1,0 +1,33 @@
+:root { color-scheme: light; font-family: system-ui, -apple-system, sans-serif; color: #19332b; background: #f5f8f5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.container { max-width: 760px; margin: 0 auto; padding: 24px 16px 56px; }
+h1 { margin-bottom: 8px; }
+h2 { margin-top: 0; font-size: 1.25rem; }
+.subtitle { color: #597067; font-size: .95rem; }
+.card { background: white; border: 1px solid #dbe7df; border-radius: 12px; padding: 18px; margin: 18px 0; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+label { display: flex; flex-direction: column; font-weight: 600; font-size: .9rem; gap: 5px; }
+input, select, button { font: inherit; min-height: 40px; border-radius: 8px; }
+input, select { border: 1px solid #bdcec3; padding: 7px 9px; width: 100%; background: white; }
+button { cursor: pointer; background: white; border: 1px solid #a9c4b0; padding: 8px 13px; font-weight: 600; }
+button:hover { background: #e9f2ec; }
+button.primary { background: #23784e; color: white; border-color: #23784e; }
+button.primary:hover { background: #175b3a; }
+button.danger { color: #a11f28; border-color: #d4a3a3; }
+button.danger:hover { background: #fff0f0; }
+.form-grid .primary { grid-column: 1 / -1; }
+.food-list { list-style: none; padding: 0; }
+.food-header { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.food-description { color: #597067; margin: 8px 0 16px; }
+.status { display: inline-block; white-space: nowrap; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
+.expired { color: #a52c2c; background: #ffeded; }
+.soon { color: #875000; background: #fff1cc; }
+.okay { color: #1b6540; background: #e8f4e9; }
+.unset { color: #63706b; background: #eef1ef; }
+.update-form { display: grid; grid-template-columns: 90px 1fr auto; gap: 10px; align-items: end; }
+.delete-form { margin-top: 10px; text-align: right; }
+@media (max-width: 560px) {
+  .form-grid, .update-form { grid-template-columns: 1fr; }
+  .container { padding-top: 16px; }
+}
