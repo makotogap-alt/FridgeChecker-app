@@ -3,68 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>冷蔵庫に何ある？</title>
+  <title>冷蔵庫に何ある？ | Fridge Checker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-  <h1>冷蔵庫に何ある？</h1>
-  <p>冷蔵庫の中身を確認できるWebアプリです。</p>
+  <main class="container">
+    <h1>冷蔵庫に何ある？</h1>
+    <p class="subtitle">冷蔵庫の中身と賞味期限を確認できるWebアプリです。</p>
 
-  <h2>食材を登録</h2>
+    <section class="card" aria-labelledby="add-heading">
+      <h2 id="add-heading">食材を登録</h2>
+      <form action="{{ url_for('add_food') }}" method="post" class="form-grid">
+        <label>食材名
+          <input type="text" name="name" maxlength="100" required placeholder="例：牛乳">
+        </label>
+        <label>数量
+          <input type="number" name="quantity" min="1" value="1" required>
+        </label>
+        <label>単位
+          <select name="unit" required>
+            <option value="個">個</option>
+            <option value="本">本</option>
+            <option value="袋">袋</option>
+            <option value="パック">パック</option>
+          </select>
+        </label>
+        <label>賞味期限（任意）
+          <input type="date" name="expiration_date">
+        </label>
+        <button type="submit" class="primary">登録する</button>
+      </form>
+    </section>
 
-  <form action="/add" method="post">
-    <div>
-      <label for="name">食材名</label>
-      <input type="text" id="name" name="name" required>
-    </div>
-
-    <div>
-      <label for="quantity">数量</label>
-      <input type="number" id="quantity" name="quantity" min="1" required>
-    </div>
-
-    <div>
-      <label for="unit">単位</label>
-      <select id="unit" name="unit">
-        <option value="個">個</option>
-        <option value="本">本</option>
-        <option value="袋">袋</option>
-        <option value="パック">パック</option>
-      </select>
-    </div>
-
-    <button type="submit">登録</button>
-  </form>
-
-  <h2>冷蔵庫の中身</h2>
-
-  {% if foods %}
-    <ul>
-      {% for food in foods %}
-        <li>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>食材はまだ登録されていません。</p>
-  {% endif %}
-
-
-{% for food in foods %}
-<div>
-  <p>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</p>
-
-  <form action="{{ url_for('update_food', food_id=food.id) }}" method="POST">
-    <input type="number" name="quantity"
-           value="{{ food.quantity }}" min="0" required>
-    <button type="submit">変更</button>
-  </form>
-
-  <form action="{{ url_for('delete_food', food_id=food.id) }}" method="POST">
-    <button type="submit">削除</button>
-  </form>
-</div>
-{% endfor %}
-
-
+    <section aria-labelledby="foods-heading">
+      <h2 id="foods-heading">冷蔵庫の中身</h2>
+      <p class="subtitle">賞味期限の3日前から「期限間近」と表示します。未設定の食材も登録できます。</p>
+      {% if foods %}
+        <ul class="food-list">
+          {% for food in foods %}
+            <li class="card food-item">
+              <div class="food-header">
+                <strong>{{ food.name }}</strong>
+                {% if food.expiration_date %}
+                  {% if food.expiration_date < today %}
+                    <span class="status expired">期限切れ</span>
+                  {% elif food.expiration_date == today %}
+                    <span class="status soon">本日まで</span>
+                  {% elif food.expiration_date <= soon_date %}
+                    <span class="status soon">あと{{ (food.expiration_date - today).days }}日</span>
+                  {% else %}
+                    <span class="status okay">期限内</span>
+                  {% endif %}
+                {% else %}
+                  <span class="status unset">期限未設定</span>
+                {% endif %}
+              </div>
+              <p class="food-description">
+                現在：{{ food.quantity }}{{ food.unit }}
+                {% if food.expiration_date %}
+                  ／ 賞味期限：{{ food.expiration_date.strftime('%Y/%m/%d') }}
+                {% endif %}
+              </p>
+              <form action="{{ url_for('update_food', food_id=food.id) }}" method="post" class="update-form">
+                <label>数量
+                  <input type="number" name="quantity" min="0" value="{{ food.quantity }}" required>
+                </label>
+                <label>賞味期限
+                  <input type="date" name="expiration_date" value="{{ food.expiration_date.isoformat() if food.expiration_date else '' }}">
+                </label>
+                <button type="submit">変更を保存</button>
+              </form>
+              <form action="{{ url_for('delete_food', food_id=food.id) }}" method="post" class="delete-form">
+                <button type="submit" class="danger">削除する</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>食材はまだ登録されていません。</p>
+      {% endif %}
+    </section>
+  </main>
 </body>
 </html>
