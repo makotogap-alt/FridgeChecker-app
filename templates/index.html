@@ -15,14 +15,16 @@
     <h1>冷蔵庫に何ある？</h1>
     <p>冷蔵庫の中身と賞味期限を確認できます。</p>
 
+    <!-- 食材登録 -->
     <section class="card">
       <h2>食材を登録</h2>
 
-      <form action="/add" method="POST" class="form-grid">
+      <form action="{{ url_for('add_food') }}"
+            method="POST" class="form-grid">
 
         <label>
           食材名
-          <input type="text" name="name" required>
+          <input type="text" name="name" maxlength="100" required>
         </label>
 
         <label>
@@ -51,93 +53,178 @@
       </form>
     </section>
 
-
+    <!-- 冷蔵庫の在庫一覧 -->
     <section>
       <h2>冷蔵庫の中身</h2>
 
       {% if foods %}
 
         {% for food in foods %}
-        <div class="card">
+          <div class="card">
 
-          <h3>{{ food.name }}</h3>
-
-          <p>
-            数量：{{ food.quantity }}{{ food.unit }}
-          </p>
-
-          {% if food.expiration_date %}
+            <h3>{{ food.name }}</h3>
 
             <p>
-              賞味期限：
-              {{ food.expiration_date.strftime('%Y/%m/%d') }}
+              数量：{{ food.quantity }}{{ food.unit }}
             </p>
 
-            {% if food.expiration_date < today %}
+            {% if food.expiration_date %}
 
-              <p class="expired">期限切れ</p>
-
-            {% elif food.expiration_date == today %}
-
-              <p class="soon">本日まで</p>
-
-            {% elif food.expiration_date <= soon_date %}
-
-              <p class="soon">
-                あと{{ (food.expiration_date - today).days }}日
+              <p>
+                賞味期限：
+                {{ food.expiration_date.strftime('%Y/%m/%d') }}
               </p>
+
+              {% if food.expiration_date < today %}
+
+                <p class="expired">期限切れ</p>
+
+              {% elif food.expiration_date == today %}
+
+                <p class="soon">本日まで</p>
+
+              {% elif food.expiration_date <= soon_date %}
+
+                <p class="soon">
+                  あと{{ (food.expiration_date - today).days }}日
+                </p>
+
+              {% else %}
+
+                <p class="okay">期限内</p>
+
+              {% endif %}
 
             {% else %}
 
-              <p class="okay">期限内</p>
+              <p class="unset">期限未設定</p>
 
             {% endif %}
 
-          {% else %}
+            <!-- 食材情報の変更 -->
+            <form action="{{ url_for('update_food', food_id=food.id) }}"
+                  method="POST">
 
-            <p class="unset">期限未設定</p>
+              <label>
+                数量
+                <input type="number"
+                       name="quantity"
+                       value="{{ food.quantity }}"
+                       min="0" required>
+              </label>
 
-          {% endif %}
+              <label>
+                賞味期限
+                <input type="date"
+                       name="expiration_date"
+                       value="{{ food.expiration_date.isoformat() if food.expiration_date else '' }}">
+              </label>
 
+              <button type="submit">変更を保存</button>
 
-          <form action="{{ url_for('update_food', food_id=food.id) }}"
-                method="POST">
+            </form>
 
-            <label>
-              数量
-              <input type="number"
-                     name="quantity"
-                     value="{{ food.quantity }}"
-                     min="0" required>
-            </label>
+            <!-- 食材の削除 -->
+            <form action="{{ url_for('delete_food', food_id=food.id) }}"
+                  method="POST">
 
-            <label>
-              賞味期限
-              <input type="date"
-                     name="expiration_date"
-                     value="{{ food.expiration_date.isoformat() if food.expiration_date else '' }}">
-            </label>
+              <button type="submit" class="delete">
+                削除する
+              </button>
 
-            <button type="submit">変更を保存</button>
+            </form>
 
-          </form>
-
-
-          <form action="{{ url_for('delete_food', food_id=food.id) }}"
-                method="POST">
-
-            <button type="submit" class="delete">
-              削除する
-            </button>
-
-          </form>
-
-        </div>
+          </div>
         {% endfor %}
 
       {% else %}
 
         <p>食材はまだ登録されていません。</p>
+
+      {% endif %}
+
+    </section>
+
+    <!-- 第5週：買い物リスト -->
+    <section class="card">
+      <h2>買い物リスト</h2>
+      <p>スーパーで購入したい食材を登録できます。</p>
+
+      <!-- 買い物リストへの追加 -->
+      <form action="{{ url_for('add_shopping_item') }}"
+            method="POST" class="form-grid">
+
+        <label>
+          食材名
+          <input type="text" name="name"
+                 maxlength="100" required>
+        </label>
+
+        <label>
+          数量
+          <input type="number" name="quantity"
+                 min="1" value="1" required>
+        </label>
+
+        <label>
+          単位
+          <select name="unit">
+            <option value="個">個</option>
+            <option value="本">本</option>
+            <option value="袋">袋</option>
+            <option value="パック">パック</option>
+          </select>
+        </label>
+
+        <button type="submit">
+          買い物リストに追加
+        </button>
+
+      </form>
+
+      <h3>購入予定の食材</h3>
+
+      {% if shopping_items %}
+
+        {% for item in shopping_items %}
+          <div class="shopping-item">
+
+            <p>
+              <strong>{{ item.name }}</strong>
+              ：{{ item.quantity }}{{ item.unit }}
+            </p>
+
+            <!-- 購入した食材を在庫へ追加 -->
+            <form action="{{ url_for('buy_shopping_item', item_id=item.id) }}"
+                  method="POST">
+
+              <label>
+                購入した食材の賞味期限（任意）
+                <input type="date" name="expiration_date">
+              </label>
+
+              <button type="submit" class="buy-button">
+                購入して在庫へ追加
+              </button>
+
+            </form>
+
+            <!-- 買い物リストから削除 -->
+            <form action="{{ url_for('delete_shopping_item', item_id=item.id) }}"
+                  method="POST">
+
+              <button type="submit" class="delete">
+                リストから削除
+              </button>
+
+            </form>
+
+          </div>
+        {% endfor %}
+
+      {% else %}
+
+        <p>買い物リストは空です。</p>
 
       {% endif %}
 

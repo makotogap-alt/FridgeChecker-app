@@ -1,4 +1,3 @@
-
 import os
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -31,6 +30,12 @@ class Food(db.Model):
     # 第4週：賞味期限を追加
     expiration_date = db.Column(db.Date, nullable=True)
 
+class ShoppingItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit = db.Column(db.String(20), nullable=False)
+
 
 # 賞味期限を日付型に変換
 def parse_expiration_date(value):
@@ -44,9 +49,13 @@ def parse_expiration_date(value):
 
 
 # トップページ
+
 @app.route("/")
 def index():
     foods = Food.query.all()
+    shopping_items = ShoppingItem.query.order_by(
+        ShoppingItem.id
+    ).all()
 
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     soon_date = today + timedelta(days=3)
@@ -54,9 +63,11 @@ def index():
     return render_template(
         "index.html",
         foods=foods,
+        shopping_items=shopping_items,
         today=today,
         soon_date=soon_date
     )
+
 
 
 # 食材の追加
@@ -132,6 +143,39 @@ def delete_food(food_id):
     return redirect(url_for("index"))
 
 
+# 買い物リストへの登録
+@app.route("/shopping/add", methods=["POST"])
+def add_shopping_item():
+    name = request.form.get("name", "").strip()
+    unit = request.form.get("unit", "").strip()
+
+    try:
+        quantity = int(request.form.get("quantity", ""))
+    except ValueError:
+        return "数量は整数で入力してください", 400
+
+    if not name or len(name) > 100:
+        return "食材名を1〜100文字で入力してください", 400
+
+    if unit not in ("個", "本", "袋", "パック"):
+        return "正しい単位を選択してください", 400
+
+    if quantity < 1:
+        return "数量は1以上にしてください", 400
+
+    item = ShoppingItem(
+        name=name,
+        quantity=quantity,
+        unit=unit
+    )
+
+    db.session.add(item)
+    db.session.commit()
+
+    return redirect(url_for("index"))
+
+
+
 # 既存の食材データを残して賞味期限の列を追加
 def initialize_database():
     with app.app_context():
@@ -159,6 +203,59 @@ def initialize_database():
                             "ADD COLUMN expiration_date DATE"
                         )
                     )
+
+
+# 買い物リストから削除
+@app.route("/shopping/delete/<int:item_id>", methods=["POST"])
+def delete_shopping_item(item_id):
+    item = ShoppingItem.query.get_or_404(item_id)
+
+    db.session.delete(item)
+    db.session.commit()
+
+    return redirect(url_for("index"))
+
+
+# 購入した食材を冷蔵庫へ追加
+@app.route("/shopping/buy/<int:item_id>", methods=["POST"])
+def buy_shopping_item(item_id):
+    item = ShoppingItem.query.get_or_404(item_id)
+
+    try:
+        expiration_date = parse_expiration_date(
+            request.form.get("expiration_date", "")
+        )
+    except ValueError:
+        return "賞味期限の形式が正しくありません", 400
+
+    # 同じ食材・単位・賞味期限の在庫を探す
+    food = Food.query.filter_by(
+        name=item.name,
+        unit=item.unit,
+        expiration_date=expiration_date
+    ).first()
+
+    if food:
+        # 同じ条件の食材がある場合、数量を増やす
+        food.quantity += item.quantity
+    else:
+        # 該当する在庫がなければ新しく登録する
+        food = Food(
+            name=item.name,
+            quantity=item.quantity,
+            unit=item.unit,
+            expiration_date=expiration_date
+        )
+        db.session.add(food)
+
+    # 買い物リストから削除
+    db.session.delete(item)
+
+    # 在庫更新とリスト削除をまとめて保存
+    db.session.commit()
+
+    return redirect(url_for("index"))
+
 
 
 initialize_database()

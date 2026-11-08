@@ -93,4 +93,42 @@ body {
       grid-template-columns: 1fr;
     }
   }
+
+
+/* 第5週：買い物リスト */
+
+.shopping-item {
+    background-color: #f8fbf8;
+    border: 1px solid #cddfd2;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+  }
+  
+  .shopping-item p {
+    margin-top: 0;
+    font-size: 16px;
+  }
+  
+  .shopping-item form {
+    margin-bottom: 10px;
+  }
+  
+  .buy-button {
+    background-color: #2277b8;
+  }
+  
+  .buy-button:hover {
+    background-color: #185b8c;
+  }
+  
+  @media (max-width: 600px) {
+    .shopping-item {
+      padding: 12px;
+    }
+  
+    .shopping-item button {
+      width: 100%;
+    }
+  }
   
