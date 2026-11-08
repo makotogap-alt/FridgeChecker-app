@@ -48,5 +48,23 @@
     <p>食材はまだ登録されていません。</p>
   {% endif %}
 
+
+{% for food in foods %}
+<div>
+  <p>{{ food.name }}：{{ food.quantity }}{{ food.unit }}</p>
+
+  <form action="{{ url_for('update_food', food_id=food.id) }}" method="POST">
+    <input type="number" name="quantity"
+           value="{{ food.quantity }}" min="0" required>
+    <button type="submit">変更</button>
+  </form>
+
+  <form action="{{ url_for('delete_food', food_id=food.id) }}" method="POST">
+    <button type="submit">削除</button>
+  </form>
+</div>
+{% endfor %}
+
+
 </body>
 </html>

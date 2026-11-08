@@ -46,6 +46,31 @@ def add_food():
 
     return redirect("/")
 
+@app.route("/update/<int:food_id>", methods=["POST"])
+def update_food(food_id):
+    food = Food.query.get_or_404(food_id)
+
+    quantity = int(request.form["quantity"])
+
+    if quantity < 0:
+        return "数量は0以上にしてください", 400
+
+    food.quantity = quantity
+    db.session.commit()
+
+    return redirect("/")
+
+
+@app.route("/delete/<int:food_id>", methods=["POST"])
+def delete_food(food_id):
+    food = Food.query.get_or_404(food_id)
+
+    db.session.delete(food)
+    db.session.commit()
+
+    return redirect("/")
+
+
 
 with app.app_context():
     db.create_all()
