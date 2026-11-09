@@ -1,134 +1,78 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f8f5;
-    margin: 0;
-    color: #243b2f;
-  }
-  
-  .container {
-    max-width: 750px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  h1 {
-    color: #226b48;
-  }
-  
-  .card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 15px;
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  input, select {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    margin-top: 5px;
-  }
-  
-  button {
-    padding: 10px 15px;
-    background-color: #287c50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  button:hover {
-    background-color: #195c39;
-  }
-  
-  .delete {
-    background-color: #c74444;
-  }
-  
-  .expired {
-    color: #c62828;
-    font-weight: bold;
-    background-color: #ffebee;
-    padding: 8px;
-    border-radius: 5px;
-  }
-  
-  .soon {
-    color: #a56a00;
-    font-weight: bold;
-    background-color: #fff3cd;
-    padding: 8px;
-    border-radius: 5px;
-  }
-  
-  .okay {
-    color: #237c42;
-    font-weight: bold;
-    background-color: #e8f5e9;
-    padding: 8px;
-    border-radius: 5px;
-  }
-  
-  .unset {
-    color: #777;
-  }
-  
-  @media (max-width: 600px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Arial, sans-serif;
+  color: #243b2f;
+  background: #f5f8f5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.container { width: min(100%, 790px); margin: 0 auto; padding: 20px; }
+h1 { color: #226b48; margin-bottom: 4px; }
+h2 { margin-top: 0; }
+.subtitle { color: #52695c; line-height: 1.6; }
+.card {
+  background: #fff;
+  border: 1px solid #d5dfd7;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.form-grid, .edit-grid, .filter-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+label { display: block; font-weight: 600; font-size: .94rem; }
+input, select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid #aebfb2;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  margin-top: 6px;
+  font-size: 16px;
+}
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  min-height: 44px;
+  background: #287c50;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { background: #195c39; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #5e9fc5; outline-offset: 2px; }
+.form-grid > button { align-self: end; }
+.primary { background: #287c50; }
+.delete { background: #c74444; }
+.delete:hover { background: #a62a2a; }
+.buy-button { background: #2277b8; }
+.buy-button:hover { background: #185b8c; }
+.delete-form { margin-top: 10px; }
+.food-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.food-head h3 { margin: 0; overflow-wrap: anywhere; }
+.category-tag { background: #e8f3eb; color: #226b48; border-radius: 99px; padding: 5px 10px; font-size: .8rem; white-space: nowrap; }
+.expired, .soon, .okay { font-weight: bold; padding: 8px; border-radius: 6px; }
+.expired { color: #a41e27; background: #ffebee; }
+.soon { color: #855200; background: #fff3cd; }
+.okay { color: #237c42; background: #e8f5e9; }
+.unset { color: #65766b; }
+.shopping-item { background: #f8fbf8; border: 1px solid #cddfd2; border-radius: 10px; padding: 15px; margin-top: 15px; }
+.shopping-item > p { margin-top: 0; overflow-wrap: anywhere; }
+.sync-panel { background: #e8f3eb; border: 1px solid #b8d7c1; border-radius: 10px; padding: 12px; margin: 15px 0; }
+#sync-status { color: #226b48; margin: 0; font-size: .92rem; }
+#sync-reload { margin-top: 8px; background: #2277b8; }
+[hidden], .food-item[hidden], #food-no-match[hidden], #sync-reload[hidden] { display: none !important; }
 
-
-/* 第5週：買い物リスト */
-
-.shopping-item {
-    background-color: #f8fbf8;
-    border: 1px solid #cddfd2;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 15px;
-  }
-  
-  .shopping-item p {
-    margin-top: 0;
-    font-size: 16px;
-  }
-  
-  .shopping-item form {
-    margin-bottom: 10px;
-  }
-  
-  .buy-button {
-    background-color: #2277b8;
-  }
-  
-  .buy-button:hover {
-    background-color: #185b8c;
-  }
-  
-  @media (max-width: 600px) {
-    .shopping-item {
-      padding: 12px;
-    }
-  
-    .shopping-item button {
-      width: 100%;
-    }
-  }
-  
+@media (max-width: 600px) {
+  .container { padding: 14px 12px; }
+  .card { padding: 15px; }
+  .form-grid, .edit-grid, .filter-controls { grid-template-columns: 1fr; }
+  .form-grid > button, .edit-grid > button, .shopping-item button, .delete-form > button { width: 100%; }
+  .food-head { align-items: flex-start; }
+}
