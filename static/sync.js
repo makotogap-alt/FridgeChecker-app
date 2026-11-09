@@ -41,8 +41,12 @@ if (statusText && reloadButton && initialSnapshot) {
   async function checkForUpdates() {
     if (isChecking || document.hidden) return;
     isChecking = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
     try {
-      const response = await fetch("/api/state", {cache: "no-store"});
+      const response = await fetch("/api/state", {
+        cache: "no-store", signal: controller.signal
+      });
       if (!response.ok) throw new Error("同期情報を取得できません");
       const latestData = await response.json();
       const latestSignature = makeSignature(latestData);
@@ -61,6 +65,7 @@ if (statusText && reloadButton && initialSnapshot) {
       console.error(error);
       showStatus("同期できません。通信状態を確認してください。", true);
     } finally {
+      clearTimeout(timeoutId);
       isChecking = false;
     }
   }

@@ -16,6 +16,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+# 不自然に大きい入力を拒否し、データベースを保護します。
+MAX_QUANTITY = 10000
+
 # 第7週：食材カテゴリ
 CATEGORIES = (
     "野菜", "肉・魚", "乳製品", "卵", "飲料", "調味料", "その他"
@@ -89,6 +92,37 @@ def get_sync_snapshot(foods=None, shopping_items=None):
     }
 
 
+# 第8週：入力ミスや存在しないURLを分かりやすい画面で案内
+def input_error(message):
+    return render_template(
+        "error.html", title="入力内容を確認してください", message=message
+    ), 400
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template(
+        "error.html", title="ページが見つかりません",
+        message="指定された食材やページが見つかりません。"
+    ), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    db.session.rollback()
+    return render_template(
+        "error.html", title="サーバーエラー",
+        message="処理に失敗しました。時間をおいて再度お試しください。"
+    ), 500
+
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
 @app.route("/api/state", methods=["GET"])
 def api_state():
     response = jsonify(get_sync_snapshot())
@@ -117,9 +151,9 @@ def add_food():
     name = request.form.get("name", "").strip()
     unit = request.form.get("unit", "").strip()
     if not name or len(name) > 100:
-        return "食材名を1〜100文字で入力してください", 400
+        return input_error("食材名を1〜100文字で入力してください")
     if unit not in ("個", "本", "袋", "パック"):
-        return "単位が正しくありません", 400
+        return input_error("単位が正しくありません")
 
     try:
         quantity = int(request.form.get("quantity", ""))
@@ -128,10 +162,10 @@ def add_food():
         )
         category = parse_category(request.form.get("category", "その他"))
     except ValueError:
-        return "数量・賞味期限・カテゴリが正しくありません", 400
+        return input_error("数量・賞味期限・カテゴリが正しくありません")
 
-    if quantity < 1:
-        return "数量は1以上にしてください", 400
+    if not 1 <= quantity <= MAX_QUANTITY:
+        return input_error("数量は1〜10000の範囲で入力してください")
 
     db.session.add(Food(
         name=name, quantity=quantity, unit=unit,
@@ -153,10 +187,10 @@ def update_food(food_id):
         )
         category = parse_category(request.form.get("category", food.category))
     except ValueError:
-        return "数量・賞味期限・カテゴリが正しくありません", 400
+        return input_error("数量・賞味期限・カテゴリが正しくありません")
 
-    if quantity < 0:
-        return "数量は0以上にしてください", 400
+    if not 0 <= quantity <= MAX_QUANTITY:
+        return input_error("数量は0〜10000の範囲で入力してください")
 
     food.quantity = quantity
     food.expiration_date = expiration_date
@@ -180,14 +214,14 @@ def add_shopping_item():
     try:
         quantity = int(request.form.get("quantity", ""))
     except ValueError:
-        return "数量は整数で入力してください", 400
+        return input_error("数量は整数で入力してください")
 
     if not name or len(name) > 100:
-        return "食材名を1〜100文字で入力してください", 400
+        return input_error("食材名を1〜100文字で入力してください")
     if unit not in ("個", "本", "袋", "パック"):
-        return "正しい単位を選択してください", 400
-    if quantity < 1:
-        return "数量は1以上にしてください", 400
+        return input_error("正しい単位を選択してください")
+    if not 1 <= quantity <= MAX_QUANTITY:
+        return input_error("数量は1〜10000の範囲で入力してください")
 
     db.session.add(ShoppingItem(name=name, quantity=quantity, unit=unit))
     db.session.commit()
@@ -211,7 +245,7 @@ def buy_shopping_item(item_id):
         )
         category = parse_category(request.form.get("category", "その他"))
     except ValueError:
-        return "賞味期限・カテゴリが正しくありません", 400
+        return input_error("賞味期限・カテゴリが正しくありません")
 
     # 賞味期限とカテゴリが同じ在庫だけを合算します。
     food = Food.query.filter_by(
@@ -219,6 +253,8 @@ def buy_shopping_item(item_id):
         expiration_date=expiration_date, category=category,
     ).first()
     if food:
+        if food.quantity + item.quantity > MAX_QUANTITY:
+            return input_error("購入後の数量が10000を超えます")
         food.quantity += item.quantity
     else:
         db.session.add(Food(

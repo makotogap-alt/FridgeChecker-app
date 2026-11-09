@@ -76,3 +76,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   .form-grid > button, .edit-grid > button, .shopping-item button, .delete-form > button { width: 100%; }
   .food-head { align-items: flex-start; }
 }
+
+/* 第8週：エラー画面と小さな画面での操作性を改善 */
+.home-link { display: inline-block; padding: 12px 18px; border-radius: 8px; background: #287c50; color: #fff; text-decoration: none; font-weight: 600; }
+.home-link:hover { background: #195c39; }
+@media (max-width: 600px) { .home-link { display: block; text-align: center; } }
