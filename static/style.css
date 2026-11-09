@@ -81,3 +81,71 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .home-link { display: inline-block; padding: 12px 18px; border-radius: 8px; background: #287c50; color: #fff; text-decoration: none; font-weight: 600; }
 .home-link:hover { background: #195c39; }
 @media (max-width: 600px) { .home-link { display: block; text-align: center; } }
+
+
+/* 第8週：食材の編集欄を折りたたみ表示 */
+
+.food-edit {
+  margin-top: 8px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.food-edit summary {
+  padding: 12px 0;
+  min-height: 44px;
+  cursor: pointer;
+  color: #287c50;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.food-edit[open] .edit-grid {
+  margin-top: 12px;
+}
+
+/* スマートフォン用のコンパクト表示 */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .food-item {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+
+  .food-item h3 {
+    font-size: 16px;
+  }
+
+  .food-item p {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+
+  .category-tag {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .food-item .expired,
+  .food-item .soon,
+  .food-item .okay {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .food-edit .edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .food-edit button {
+    width: 100%;
+  }
+}
