@@ -2,7 +2,7 @@ import os
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, text
 
@@ -46,13 +46,71 @@ def parse_expiration_date(value):
         return date.fromisoformat(value.strip())
     except ValueError:
         raise ValueError("賞味期限の形式が正しくありません")
+    
+
+# 第6週：共有する食材データを取得
+def get_sync_snapshot(foods=None, shopping_items=None):
+
+    if foods is None:
+        foods = Food.query.order_by(Food.id).all()
+
+    if shopping_items is None:
+        shopping_items = ShoppingItem.query.order_by(
+            ShoppingItem.id
+        ).all()
+
+    today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
+
+    return {
+        "today": today.isoformat(),
+
+        "foods": [
+            {
+                "id": food.id,
+                "name": food.name,
+                "quantity": food.quantity,
+                "unit": food.unit,
+                "expiration_date": (
+                    food.expiration_date.isoformat()
+                    if food.expiration_date else None
+                )
+            }
+            for food in foods
+        ],
+
+        "shopping_items": [
+            {
+                "id": item.id,
+                "name": item.name,
+                "quantity": item.quantity,
+                "unit": item.unit
+            }
+            for item in shopping_items
+        ]
+    }
+
+
+# 第6週：他の端末が最新情報を取得するAPI
+@app.route("/api/state", methods=["GET"])
+def api_state():
+
+    data = get_sync_snapshot()
+
+    response = jsonify(data)
+    response.headers["Cache-Control"] = "no-store"
+
+    return response
+
 
 
 # トップページ
 
+# トップページ
 @app.route("/")
 def index():
-    foods = Food.query.all()
+
+    foods = Food.query.order_by(Food.id).all()
+
     shopping_items = ShoppingItem.query.order_by(
         ShoppingItem.id
     ).all()
@@ -60,13 +118,21 @@ def index():
     today = datetime.now(ZoneInfo("Asia/Tokyo")).date()
     soon_date = today + timedelta(days=3)
 
+    # 画面を開いた時点のデータを保存
+    snapshot = get_sync_snapshot(
+        foods,
+        shopping_items
+    )
+
     return render_template(
         "index.html",
         foods=foods,
         shopping_items=shopping_items,
         today=today,
-        soon_date=soon_date
+        soon_date=soon_date,
+        snapshot=snapshot
     )
+
 
 
 

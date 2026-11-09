@@ -14,6 +14,16 @@
 
     <h1>冷蔵庫に何ある？</h1>
     <p>冷蔵庫の中身と賞味期限を確認できます。</p>
+    <!-- 第6週：同期状態の表示 -->
+     <div class="sync-panel">
+      <p id="sync-status" role="status" aria-live="polite">
+        同期状態を確認しています...
+      </p>
+      <button type="button" id="sync-reload" hidden>
+        最新情報を表示
+      </button>
+    </div>
+
 
     <!-- 食材登録 -->
     <section class="card">
@@ -230,6 +240,17 @@
 
     </section>
 
+  
   </main>
+
+  <!-- 画面表示時点のデータ -->
+  <script id="initial-snapshot" type="application/json">
+    {{ snapshot | tojson }}
+  </script>
+
+  <!-- 第6週：同期処理 -->
+  <script src="{{ url_for('static', filename='sync.js') }}"
+          defer></script>
+
 </body>
 </html>
