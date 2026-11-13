@@ -477,12 +477,12 @@
 
 /* 食材一覧セクションの下に余白を追加 */
 #food-list {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 /* スマホでは少し狭くする */
 @media (max-width: 600px) {
   #food-list {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 }
