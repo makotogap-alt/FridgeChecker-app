@@ -7,6 +7,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect, text
 
 app = Flask(__name__)
+# Set a long random SECRET_KEY in Render. Never use a default on production.
+if os.environ.get("RENDER") and not os.environ.get("SECRET_KEY"):
+    raise RuntimeError("Render本番環境ではSECRET_KEYを設定してください")
+app.secret_key = os.environ.get("SECRET_KEY", "development-only-change-this-secret")
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
 # RenderではDATABASE_URLにPostgreSQLの接続URLを設定します。
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
@@ -300,6 +305,8 @@ def initialize_database():
             raise RuntimeError("対応していないデータベースです")
 
 
+from receipt_routes import setup_receipt_routes
+ReceiptImport = setup_receipt_routes(app, db, Food)
 initialize_database()
 
 if __name__ == "__main__":
