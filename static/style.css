@@ -470,3 +470,7 @@
     }
   }
   
+  /* 食材一覧のセクション全体に余白 */
+  section[aria-labelledby="inventory-heading"] {
+    margin-bottom: 60px;
+  }
