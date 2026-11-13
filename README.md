@@ -1,2 +1,0 @@
-# FridgeChecker-app
-# FridgeChecker-app
