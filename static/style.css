@@ -1,488 +1,152 @@
-
-/* =========================
-   基本設定
-   ========================= */
-
-   :root {
-    font-family: -apple-system, BlinkMacSystemFont,
-      "Hiragino Kaku Gothic ProN", "Yu Gothic",
-      Arial, sans-serif;
-    color: #243b2f;
-    background: #f5f8f5;
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-  }
-  
-  /* PCでは横幅を広く使用 */
-  .container {
-    width: 95%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  /* =========================
-     見出し・テキスト
-     ========================= */
-  
-  h1 {
-    color: #226b48;
-    margin-bottom: 4px;
-  }
-  
-  h2 {
-    margin-top: 0;
-  }
-  
-  .subtitle {
-    color: #52695c;
-    line-height: 1.6;
-  }
-  
-  /* =========================
-     カード
-     ========================= */
-  
-  .card {
-    background: #fff;
-    border: 1px solid #d5dfd7;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  
-  /* =========================
-     フォーム
-     ========================= */
-  
-  .form-grid,
-  .edit-grid,
-  .filter-controls {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-  
-  label {
-    display: block;
-    font-weight: 600;
-    font-size: 0.94rem;
-  }
-  
-  input,
-  select {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    border: 1px solid #aebfb2;
-    border-radius: 8px;
-    padding: 10px;
-    background: #fff;
-    margin-top: 6px;
-    font-size: 16px;
-  }
-  
-  /* =========================
-     ボタン
-     ========================= */
-  
-  button {
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 16px;
-    min-height: 44px;
-    background: #287c50;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background: #195c39;
-  }
-  
-  button:focus-visible,
-  input:focus-visible,
-  select:focus-visible {
-    outline: 3px solid #5e9fc5;
-    outline-offset: 2px;
-  }
-  
-  .form-grid > button {
-    align-self: end;
-  }
-  
-  .primary {
-    background: #287c50;
-  }
-  
-  .delete {
-    background: #c74444;
-  }
-  
-  .delete:hover {
-    background: #a62a2a;
-  }
-  
-  .buy-button {
-    background: #2277b8;
-  }
-  
-  .buy-button:hover {
-    background: #185b8c;
-  }
-  
-  .delete-form {
-    margin-top: 10px;
-  }
-  
-  /* =========================
-     冷蔵庫の食材一覧
-     ========================= */
-  
-  #food-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    align-items: start;
-  }
-  
-  .food-item {
-    min-width: 0;
-    margin-bottom: 0;
-  }
-  
-  .food-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  
-  .food-head h3 {
-    margin: 0;
-    overflow-wrap: anywhere;
-  }
-  
-  .category-tag {
-    background: #e8f3eb;
-    color: #226b48;
-    border-radius: 99px;
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-  }
-  
-  /* =========================
-     賞味期限
-     ========================= */
-  
-  .expired,
-  .soon,
-  .okay {
-    font-weight: bold;
-    padding: 8px;
-    border-radius: 6px;
-  }
-  
-  .expired {
-    color: #a41e27;
-    background: #ffebee;
-  }
-  
-  .soon {
-    color: #855200;
-    background: #fff3cd;
-  }
-  
-  .okay {
-    color: #237c42;
-    background: #e8f5e9;
-  }
-  
-  .unset {
-    color: #65766b;
-  }
-  
-  /* =========================
-     食材の編集・削除
-     ========================= */
-  
-  .food-edit {
-    margin-top: 8px;
-    border-top: 1px solid #e5e5e5;
-  }
-  
-  .food-edit summary {
-    padding: 12px 0;
-    min-height: 44px;
-    cursor: pointer;
-    color: #287c50;
-    font-size: 14px;
-    font-weight: bold;
-  }
-  
-  .food-edit[open] .edit-grid {
-    margin-top: 12px;
-  }
-  
-  /* =========================
-     買い物リスト
-     ========================= */
-  
-  .shopping-item {
-    background: #f8fbf8;
-    border: 1px solid #cddfd2;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-  }
-  
-  .shopping-item > p {
-    margin-top: 0;
-    overflow-wrap: anywhere;
-  }
-  
-  /* =========================
-     同期状態
-     ========================= */
-  
-  .sync-panel {
-    background: #e8f3eb;
-    border: 1px solid #b8d7c1;
-    border-radius: 10px;
-    padding: 12px;
-    margin: 15px 0;
-  }
-  
-  #sync-status {
-    color: #226b48;
-    margin: 0;
-    font-size: 0.92rem;
-  }
-  
-  #sync-reload {
-    margin-top: 8px;
-    background: #2277b8;
-  }
-  
-  /* 非表示要素 */
-  [hidden],
-  .food-item[hidden],
-  #food-no-match[hidden],
-  #sync-reload[hidden] {
-    display: none !important;
-  }
-  
-  /* =========================
-     エラーページ
-     ========================= */
-  
-  .home-link {
-    display: inline-block;
-    padding: 12px 18px;
-    border-radius: 8px;
-    background: #287c50;
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  
-  .home-link:hover {
-    background: #195c39;
-  }
-  
-  /* =========================
-     PC用レイアウト
-     901px以上
-     ========================= */
-  
-  @media screen and (min-width: 901px) {
-  
-    .container {
-      width: 95%;
-      max-width: 1400px;
-      padding: 24px;
-    }
-  
-    /* 食材一覧を3列表示 */
-    #food-list {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-  
-    /* 入力フォームは2列 */
-    .form-grid,
-    .edit-grid,
-    .filter-controls {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  
-  /* =========================
-     タブレット用レイアウト
-     601px〜900px
-     ========================= */
-  
-  @media screen and (min-width: 601px)
-    and (max-width: 900px) {
-  
-    .container {
-      width: 95%;
-      padding: 16px;
-    }
-  
-    /* 食材一覧を2列表示 */
-    #food-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-  
-    .form-grid,
-    .edit-grid,
-    .filter-controls {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  
-    .card {
-      padding: 16px;
-    }
-  }
-  
-  /* =========================
-     スマートフォン用レイアウト
-     600px以下
-     ========================= */
-  
-  @media screen and (max-width: 600px) {
-  
-    /* 画面幅いっぱいに表示 */
-    .container {
-      width: 100%;
-      max-width: 100%;
-      padding: 10px;
-    }
-  
-    /* タイトル */
-    h1 {
-      font-size: 24px;
-    }
-  
-    h2 {
-      font-size: 20px;
-    }
-  
-    /* カード */
-    .card {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-  
-    /* フォームを縦1列に */
-    .form-grid,
-    .edit-grid,
-    .filter-controls {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-  
-    /* 入力欄 */
-    input,
-    select {
-      width: 100%;
-      max-width: 100%;
-      font-size: 16px;
-    }
-  
-    /* ボタンを横幅いっぱいに */
-    button {
-      width: 100%;
-    }
-  
-    /* 食材一覧を1列表示 */
-    #food-list {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-  
-    .food-item {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 0;
-    }
-  
-    .food-item h3 {
-      font-size: 16px;
-    }
-  
-    .food-item p {
-      font-size: 13px;
-      margin: 6px 0;
-    }
-  
-    .food-head {
-      align-items: flex-start;
-    }
-  
-    .category-tag {
-      padding: 4px 8px;
-      font-size: 11px;
-    }
-  
-    /* 賞味期限の表示 */
-    .food-item .expired,
-    .food-item .soon,
-    .food-item .okay {
-      display: inline-block;
-      padding: 4px 8px;
-      font-size: 12px;
-    }
-  
-    /* 編集フォーム */
-    .food-edit .edit-grid {
-      grid-template-columns: 1fr;
-    }
-  
-    .food-edit button {
-      width: 100%;
-    }
-  
-    /* 買い物リスト */
-    .shopping-item {
-      padding: 12px;
-    }
-  
-    /* 戻るリンク */
-    .home-link {
-      display: block;
-      text-align: center;
-    }
-  }
-
-  /* 冷蔵庫の中身と買い物リストの間隔 */
-#inventory-heading {
-  margin-top: 20px;
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Arial, sans-serif;
+  color: #243b2f;
+  background: #f5f8f5;
 }
-
-/* 食材一覧セクションの下に余白を追加 */
-#food-list {
-  margin-bottom: 20px;
+* { box-sizing: border-box; }
+body { margin: 0; }
+.container { width: min(100%, 790px); margin: 0 auto; padding: 20px; }
+h1 { color: #226b48; margin-bottom: 4px; }
+h2 { margin-top: 0; }
+.subtitle { color: #52695c; line-height: 1.6; }
+.card {
+  background: #fff;
+  border: 1px solid #d5dfd7;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
+.form-grid, .edit-grid, .filter-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+label { display: block; font-weight: 600; font-size: .94rem; }
+input, select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid #aebfb2;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  margin-top: 6px;
+  font-size: 16px;
+}
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  min-height: 44px;
+  background: #287c50;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { background: #195c39; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #5e9fc5; outline-offset: 2px; }
+.form-grid > button { align-self: end; }
+.primary { background: #287c50; }
+.delete { background: #c74444; }
+.delete:hover { background: #a62a2a; }
+.buy-button { background: #2277b8; }
+.buy-button:hover { background: #185b8c; }
+.delete-form { margin-top: 10px; }
+.food-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.food-head h3 { margin: 0; overflow-wrap: anywhere; }
+.category-tag { background: #e8f3eb; color: #226b48; border-radius: 99px; padding: 5px 10px; font-size: .8rem; white-space: nowrap; }
+.expired, .soon, .okay { font-weight: bold; padding: 8px; border-radius: 6px; }
+.expired { color: #a41e27; background: #ffebee; }
+.soon { color: #855200; background: #fff3cd; }
+.okay { color: #237c42; background: #e8f5e9; }
+.unset { color: #65766b; }
+.shopping-item { background: #f8fbf8; border: 1px solid #cddfd2; border-radius: 10px; padding: 15px; margin-top: 15px; }
+.shopping-item > p { margin-top: 0; overflow-wrap: anywhere; }
+.sync-panel { background: #e8f3eb; border: 1px solid #b8d7c1; border-radius: 10px; padding: 12px; margin: 15px 0; }
+#sync-status { color: #226b48; margin: 0; font-size: .92rem; }
+#sync-reload { margin-top: 8px; background: #2277b8; }
+[hidden], .food-item[hidden], #food-no-match[hidden], #sync-reload[hidden] { display: none !important; }
 
-/* スマホでは少し狭くする */
 @media (max-width: 600px) {
-  #food-list {
-    margin-bottom: 20px;
+  .container { padding: 14px 12px; }
+  .card { padding: 15px; }
+  .form-grid, .edit-grid, .filter-controls { grid-template-columns: 1fr; }
+  .form-grid > button, .edit-grid > button, .shopping-item button, .delete-form > button { width: 100%; }
+  .food-head { align-items: flex-start; }
+}
+
+.home-link { display: inline-block; padding: 12px 18px; border-radius: 8px; background: #287c50; color: #fff; text-decoration: none; font-weight: 600; }
+.home-link:hover { background: #195c39; }
+@media (max-width: 600px) { .home-link { display: block; text-align: center; } }
+
+.food-edit {
+  margin-top: 8px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.food-edit summary {
+  padding: 12px 0;
+  min-height: 44px;
+  cursor: pointer;
+  color: #287c50;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.food-edit[open] .edit-grid {
+  margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .food-item {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+
+  .food-item h3 {
+    font-size: 16px;
+  }
+
+  .food-item p {
+    font-size: 13px;
+    margin: 6px 0;
+  }
+
+  .category-tag {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .food-item .expired,
+  .food-item .soon,
+  .food-item .okay {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .food-edit .edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .food-edit button {
+    width: 100%;
   }
 }
+
+textarea { display:block; width:100%; min-height:120px; border:1px solid #aebfb2; border-radius:8px; padding:10px; font:inherit; margin-top:6px; }
+.receipt-error { padding:14px; border-radius:10px; background:#ffebee; color:#a41e27; }
+.receipt-check { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.receipt-check input { width:22px; height:22px; min-height:0; margin:0; }
+.receipt-confirm { width:100%; margin-bottom:30px; }
