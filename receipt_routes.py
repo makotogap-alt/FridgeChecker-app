@@ -7,7 +7,7 @@ from flask import current_app, render_template, request, redirect, url_for, sess
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from sqlalchemy.exc import IntegrityError
 
-from receipt_service import ReceiptRecognitionError, parse_manual_lines, recognize_receipt, UNITS, CATEGORIES
+from receipt_service import ReceiptRecognitionError, parse_manual_lines, recognize_receipt_detailed, UNITS, CATEGORIES
 
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 
@@ -40,6 +40,7 @@ def setup_receipt_routes(app, db, Food):
         if not valid_csrf():
             return render_template('receipt.html', csrf=csrf_value(), error='画面を再読み込みしてください'), 403
         source = request.form.get('manual', '').strip()
+        ocr_text = None
         try:
             if source:
                 if len(source)>4000:
@@ -65,13 +66,13 @@ def setup_receipt_routes(app, db, Food):
                 fingerprint = hashlib.sha256(raw).hexdigest()
                 if ReceiptImport.query.filter_by(fingerprint=fingerprint).first():
                     return render_template('receipt.html', csrf=csrf_value(), error='このレシートは登録済みです'), 409
-                items = recognize_receipt(raw, mime)
+                items, ocr_text = recognize_receipt_detailed(raw, mime)
         except ReceiptRecognitionError as exc:
             return render_template('receipt.html', csrf=csrf_value(), error=str(exc)), 400
 
         token = get_signer().dumps({'fingerprint':fingerprint, 'count':len(items)})
         return render_template('receipt_review.html', items=items, token=token, csrf=csrf_value(),
-                               units=UNITS, categories=CATEGORIES)
+                               units=UNITS, categories=CATEGORIES, ocr_text=ocr_text)
 
     @app.post('/receipt/confirm')
     def receipt_confirm():
@@ -82,7 +83,7 @@ def setup_receipt_routes(app, db, Food):
             payload = get_signer().loads(token, max_age=3600)
             fingerprint = payload['fingerprint']
             count = payload['count']
-            if not isinstance(count,int) or count<1 or count>30 or len(fingerprint)!=64:
+            if not isinstance(count,int) or count<0 or count>30 or len(fingerprint)!=64:
                 raise BadSignature('invalid payload')
         except (BadSignature, SignatureExpired, KeyError, TypeError):
             return render_template('receipt.html', csrf=csrf_value(), error='確認画面の有効期限が切れました。最初からやり直してください'), 400
@@ -105,6 +106,18 @@ def setup_receipt_routes(app, db, Food):
             if not name or len(name)>100 or unit not in UNITS or category not in CATEGORIES or not 1<=quantity<=10000:
                 return render_template('receipt.html', csrf=csrf_value(), error='商品情報を確認してください'), 400
             checked.append((name,quantity,unit,category,expiration))
+        # Items missed by the conservative OCR can be entered on the review page.
+        extra = request.form.get('extra_manual', '').strip()
+        if len(extra) > 2000:
+            return render_template('receipt.html', csrf=csrf_value(), error='追加商品は2000文字以内にしてください'), 400
+        if extra:
+            try:
+                additions = parse_manual_lines(extra)
+            except ReceiptRecognitionError as exc:
+                return render_template('receipt.html', csrf=csrf_value(), error=str(exc)), 400
+            if len(checked) + len(additions) > 30:
+                return render_template('receipt.html', csrf=csrf_value(), error='一度に登録できる商品は30件までです'), 400
+            checked.extend((i['name'], i['quantity'], i['unit'], i['category'], None) for i in additions)
         if not checked:
             return render_template('receipt.html', csrf=csrf_value(), error='登録する食品を1件以上選択してください'), 400
 
