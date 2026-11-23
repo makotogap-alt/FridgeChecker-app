@@ -181,13 +181,13 @@ def recognize_receipt_detailed(image_bytes, mime):
             if width < 120 or height < 120 or width * height > 16_000_000:
                 raise ReceiptRecognitionError("画像サイズが適切ではありません。別の写真をお試しください")
             fixed = ImageOps.exif_transpose(opened)
-            if max(fixed.size) > 2400:
-                fixed.thumbnail((2400, 2400), Image.Resampling.LANCZOS)
+            if max(fixed.size) > 1800:
+                fixed.thumbnail((1800, 1800), Image.Resampling.LANCZOS)
             gray = ImageOps.grayscale(fixed)
             image = ImageEnhance.Contrast(ImageOps.autocontrast(gray)).enhance(1.35)
         # Hard timeout prevents malformed/huge inputs from blocking a web worker.
         raw_text = pytesseract.image_to_string(
-            image, lang="jpn+eng", config="--psm 6", timeout=20
+            image, lang="jpn+eng", config="--psm 6", timeout=60
         )
     except pytesseract.TesseractNotFoundError as exc:
         raise ReceiptRecognitionError("サーバーにTesseractがありません。Dockerの設定を確認してください") from exc
